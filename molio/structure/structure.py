@@ -2,6 +2,8 @@ from molio.structure.atom import Atom
 from molio.structure.bond import Bond
 from molio.structure.angle import Angle
 
+import numpy
+
 class Structure:
     """
     Contains information about a given structure.
@@ -12,6 +14,7 @@ class Structure:
     atoms: list[Atom]
     bonds: list[Bond]
     angles: list[Angle]
+
 
     def __init__(self) -> None:
         pass
@@ -41,8 +44,14 @@ class Structure:
             for angle in angles:
                 angle.calculate_angle(self.atoms)
 
-    def update_atoms(self, atoms: list[Atom]) -> None:
+    def update_atoms(self,
+                     atoms: list[Atom]) -> None:
+        """
+        Updates the atoms in the structure.
 
+        Args:
+            atoms (list[Atom]): List of atoms that have the new coordinates.
+        """
         assert self.nat == len(atoms)
         for i, at in enumerate(atoms):
             assert at.element == self.atoms[i].element # Check that atoms match
@@ -64,6 +73,68 @@ class Structure:
         for atom in self.atoms:
             chg += atom.charge
         self.charge = chg
+
+
+    def translate_structure(self,
+                            x: int = 0,
+                            y:int = 0,
+                            z: int = 0) -> None:
+        """
+        Translates the structure in the x,y,z coordinates.
+
+        Args:
+            x (int, optional): x coordinate of the structure. Defaults to 0.
+            y (int, optional): y coordinate of the structure. Defaults to 0.
+            z (int, optional): z coordinate of the structure. Defaults to 0.
+        """
+        for atom in self.atoms:
+            if x != 0:
+                atom.translate_x(x)
+            if y != 0:
+                atom.translate_y(y)
+            if z != 0:
+                atom.translate_z(z)
+
+    def rotate_structure(self,
+                         angle: float,
+                         axis: tuple[float, float, float] = (0, 0, 1),
+                         ) -> None:
+        """
+        Rotates the structure around a specific axis.
+
+        Args:
+            angle (float, optional): angle of the rotation in degrees. Defaults to 0.
+            axis (tuple[float, float, float], optional): axis of the rotation. Defaults to the z axis (0, 0, 1).
+        """
+        vec = numpy.asarray(axis, dtype=float)
+        norm_vec = numpy.linalg.norm(vec)
+        if norm_vec == 0:
+            raise ValueError("Axis vector cannot be zero")
+        vec = vec / norm_vec
+        angle_rad = numpy.radians(angle)
+
+        cos_theta = numpy.cos(angle_rad)
+        sin_theta = numpy.sin(angle_rad)
+
+        for atom in self.atoms:
+            point = numpy.asarray(atom.coords(), dtype=float)
+            new_point = (point * cos_theta +
+                         numpy.cross(vec, point) * sin_theta +
+                         vec * numpy.dot(vec, point) * (1 - cos_theta))
+            atom.update_coordinates(x=new_point[0], y=new_point[1], z=new_point[2])
+
+
+    def _coord_array(self) -> numpy.ndarray:
+        """
+        Extracts the coordinates of the atoms in the structure.
+
+        Returns:
+            arr (numpy.ndarray): Array of coordinates of the atoms in the structure.
+        """
+        arr = numpy.zeros(shape=(self.nat,3) , dtype=float)
+        for i, atom in enumerate(self.atoms):
+            arr[i, :] = atom.coords()
+        return arr
 
     # def _compute_bonds(self, max_bond_length: dict):
     # TODO
