@@ -1,6 +1,3 @@
-from pickletools import read_unicodestringnl
-
-
 class Atom:
     """Class containing atom information
     
@@ -34,7 +31,12 @@ class Atom:
     def __init__(self):
         pass
 
-    def coords(self):
+    def coords(self) -> (float, float, float):
+        """
+        Creates the atomic coordinates as a tuple
+        Returns:
+            coordinates (float,float,float): The x,y,z coordinates of the atom.
+        """
         return (self.x, self.y, self.z)
 
     def set_atom(self, element: str, x: float, y: float, z: float) -> None:

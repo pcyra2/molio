@@ -6,8 +6,16 @@ from molio.filetypes.filetypes import StructrueFile
 import datetime
 
 class PDB(StructrueFile):
-
+    """
+    PDB structure parser
+    """
     def from_file(self, file: str) -> None:
+        """
+        Reads in a PDB file
+
+        Args:
+            file (str): Path to PDB file
+        """
         with open(file, "r") as f:
             lines = f.readlines()
         nat = None
@@ -100,6 +108,12 @@ class PDB(StructrueFile):
 
 
     def to_file(self, file: str) -> None:
+        """
+        Writes the structure to a file
+
+        Args:
+            file (str): Path to file
+        """
         with open(file, "w") as f:
             print("TITLE   {0:2} {1:79}".format(" ", # Continuation
                 f"PDB file created by Ross Amory on {datetime.datetime.now().strftime('%x at %X')}",),

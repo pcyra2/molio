@@ -18,6 +18,9 @@ class XYZ(StructrueFile):
     def from_file(self, file: str) -> None:
         """
         Reads a .xyz file.
+
+        Args:
+            file (str): Path to the .xyz file.
         """
         with open(file, "r") as f:
             lines = f.readlines()
@@ -33,6 +36,7 @@ class XYZ(StructrueFile):
         for i, line in enumerate(lines[2:nat+2]):
             words = line.split()
             atoms[i].set_atom(str(words[0]), float(words[1]), float(words[2]), float(words[3]))
+            atoms[i].add_index(i) # Allows for bonds and angles to work.
 
         self.structure.add_atoms(atoms)
         
@@ -42,6 +46,9 @@ class XYZ(StructrueFile):
     def to_file(self, file: str) -> None:
         """
         Writes the structure to a .xyz file.
+
+        Args:
+            file (str): Path to the .xyz file.
         """
         with open(file, "w") as f:
             print(str(self.structure.nat), file=f)
@@ -78,12 +85,13 @@ class XYZ(StructrueFile):
         for line in tqdm(lines, "Reading file: "):
             
             if line.strip() == str(nat) and index < 0: # The gap between .xyz structures. 
-                # Allows for structure delimiters rather than .xyz structures in rapid succsesison.
+                # Allows for structure delimiters rather than .xyz structures in rapid succession.
                 index = -2 # Assuming nat definition is 2 lines before the start of the structure. 
             if index >= 0: # Where the atoms start
                 words = line.split()
                 # print(words, index)
                 mol[index].set_atom(str(words[0]), float(words[1]), float(words[2]), float(words[3]))
+                mol[index].add_index(index)
             if index == nat-1:
                 struct = Structure()
                 struct.add_atoms(mol)

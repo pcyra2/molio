@@ -3,6 +3,9 @@ from molio.structure.structure import Structure
 
 
 class StructrueFile:
+    """
+    Parent class of a structure file
+    """
     structure: Structure
 
     def __init__(self) -> None:
@@ -35,7 +38,13 @@ class StructrueFile:
             self.structure.add_atoms(structure)
 
     def from_file(self, file: str) -> None:
+        """
+        Reads in a file and converts it into a structure object
+        """
         raise NotImplementedError()
 
     def to_file(self, file: str) -> None:
+        """
+        Writes the structure to a file
+        """
         raise NotImplementedError()
