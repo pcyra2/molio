@@ -1,4 +1,5 @@
 from molio.structure.atom import Atom
+from molio.utils.maths import calc_distance
 
 class Bond:
     """
@@ -53,12 +54,6 @@ class Bond:
         assert a is not None
         assert b is not None
 
-        ax, ay, az = float(a.x), float(a.y), float(a.z)
-        bx, by, bz = float(b.x), float(b.y), float(b.z)
-
-        dx = ax - bx
-        dy = ay - by
-        dz = az - bz
-        self.length = (dx * dx + dy * dy + dz * dz) ** 0.5
+        self.length = calc_distance(a.coords(), b.coords())
 
         return  self.length

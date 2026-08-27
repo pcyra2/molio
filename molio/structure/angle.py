@@ -1,4 +1,5 @@
 from molio.structure.atom import Atom
+from molio.utils.maths import calc_angle
 import numpy
 
 class Angle:
@@ -54,13 +55,5 @@ class Angle:
         assert b is not None
         assert c is not None
 
-        ax, ay, az = float(a.x), float(a.y), float(a.z)
-        bx, by, bz = float(b.x), float(b.y), float(b.z)
-        cx, cy, cz = float(c.x), float(c.y), float(c.z)
-
-        v1 = numpy.array([ax-bx, ay-by, az-bz])
-        v2 = numpy.array([cx-bx, cy-by, cz-bz])
-
-        cos_ang = numpy.dot(v1,v2) / (numpy.linalg.norm(v1) * numpy.linalg.norm(v2))
-        ang = numpy.arccos(cos_ang)
-        return numpy.degrees(ang)
+        self.angle = calc_angle(a.coords(), b.coords(), c.coords())
+        return self.angle
