@@ -23,7 +23,7 @@ class StructrueFile:
 
         assert atms is not None
 
-        self.structure.update_atoms(atms)
+        self.structure.update_coordinates(atms)
 
     def from_structure(self, structure: Structure|list[Atom]) -> None:
         """Allows the generation of a file from a list of atoms/Structure object

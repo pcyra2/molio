@@ -44,10 +44,10 @@ class Structure:
             for angle in angles:
                 angle.calculate_angle(self.atoms)
 
-    def update_atoms(self,
-                     atoms: list[Atom]) -> None:
+    def update_coordinates(self,
+                           atoms: list[Atom]) -> None:
         """
-        Updates the atoms in the structure.
+        Updates the coordinates of the atoms in the structure.
 
         Args:
             atoms (list[Atom]): List of atoms that have the new coordinates.
@@ -135,6 +135,30 @@ class Structure:
         for i, atom in enumerate(self.atoms):
             arr[i, :] = atom.coords()
         return arr
+
+
+    def add_structure(self, structure2: Structure) -> None:
+        """
+        Adds a structure to the existing structure.
+
+        Args:
+            structure2 (Structure): Structure to be added.
+        """
+        final_index = self.atoms[-1].index
+        s2_start_index = structure2.atoms[0].index
+        s2_nat = structure2.nat
+
+        for i, atom in enumerate(structure2.atoms): # Updates the index of atoms.
+            ind = atom.index
+            if ind is not None:
+                atom.add_index(final_index + ind - s2_start_index + 1 ) # Accounts for if structure 2 does not start at 0.
+            else:
+                atom.add_index(final_index + i + 1)
+
+        self.atoms += structure2.atoms
+        self.nat += s2_nat
+
+
 
     # def _compute_bonds(self, max_bond_length: dict):
     # TODO
