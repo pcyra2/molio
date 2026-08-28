@@ -54,7 +54,7 @@ class Structure:
         """
         assert self.nat == len(atoms)
         for i, at in enumerate(atoms):
-            assert at.element == self.atoms[i].element # Check that atoms match
+            assert at.element == self.atoms[i].element, f"{at.element} != {self.atoms[i].element} at position {i}" # Check that atoms match
             self.atoms[i].update_coordinates(x=at.x, y=at.y, z=at.z)
 
         if hasattr(self, 'bonds'):
@@ -137,7 +137,7 @@ class Structure:
         return arr
 
 
-    def add_structure(self, structure2: Structure) -> None:
+    def add_structure(self, structure2) -> None:
         """
         Adds a structure to the existing structure.
 
@@ -150,8 +150,8 @@ class Structure:
 
         for i, atom in enumerate(structure2.atoms): # Updates the index of atoms.
             ind = atom.index
-            if ind is not None:
-                atom.add_index(final_index + ind - s2_start_index + 1 ) # Accounts for if structure 2 does not start at 0.
+            if ind is not None: # Accounts for if structure 2 does not start at 0.
+                atom.add_index(final_index + ind - s2_start_index + 1 )
             else:
                 atom.add_index(final_index + i + 1)
 

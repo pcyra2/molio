@@ -5,6 +5,7 @@ from molio.utils.print_tools import print_center
 from molio.filetypes.filetypes import StructrueFile
 
 from tqdm import tqdm
+import os
 
 class XYZ(StructrueFile):
     """
@@ -22,6 +23,8 @@ class XYZ(StructrueFile):
         Args:
             file (str): Path to the .xyz file.
         """
+        assert os.path.isfile(file), f"File {file} does not exist"
+
         with open(file, "r") as f:
             lines = f.readlines()
      
@@ -67,6 +70,9 @@ class XYZ(StructrueFile):
         Args:
             file (str): Path to the trajectory file.
         """
+        print_center(text=f"Starting to parse the XYZ trajectory file {file}", emph=True)
+
+        assert os.path.isfile(file), f"File {file} does not exist"
 
         with open(file, "r") as f:
             lines = f.readlines()
@@ -77,10 +83,10 @@ class XYZ(StructrueFile):
 
         struct = None
 
-        print_center(text="Starting the parse of the XYZ trajectory file", emph=True)
+
         print_center(f"Number of atoms: {nat}")
 
-        mol = [Atom()] * nat
+        mol = [Atom] * nat
 
         for line in tqdm(lines, "Reading file: "):
             
@@ -89,9 +95,10 @@ class XYZ(StructrueFile):
                 index = -2 # Assuming nat definition is 2 lines before the start of the structure. 
             if index >= 0: # Where the atoms start
                 words = line.split()
-                # print(words, index)
-                mol[index].set_atom(str(words[0]), float(words[1]), float(words[2]), float(words[3]))
-                mol[index].add_index(index)
+                at = Atom()
+                at.set_atom(str(words[0]), float(words[1]), float(words[2]), float(words[3]))
+                at.add_index(index)
+                mol[index] = at
             if index == nat-1:
                 struct = Structure()
                 struct.add_atoms(mol)
@@ -99,9 +106,9 @@ class XYZ(StructrueFile):
                 n_structures += 1
                 index = -1000 # Reset the index counter
                 # print(n_structures)
-                print(mol[0].echo())
-                print(mol[-1].echo())
-                mol = [Atom()] * nat
+                # print(mol[0].echo())
+                # print(mol[-1].echo())
+                mol = [Atom] * nat
 
             index += 1 # Add to the index. 
 

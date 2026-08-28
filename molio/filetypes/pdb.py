@@ -4,6 +4,7 @@ from molio.structure.atom import Atom
 from molio.filetypes.filetypes import StructrueFile
 
 import datetime
+import os
 
 class PDB(StructrueFile):
     """
@@ -16,6 +17,8 @@ class PDB(StructrueFile):
         Args:
             file (str): Path to PDB file
         """
+        assert os.path.isfile(file), f"File {file} does not exist"
+
         with open(file, "r") as f:
             lines = f.readlines()
         nat = None
@@ -27,10 +30,10 @@ class PDB(StructrueFile):
 
         assert nat is not None
 
-        tmp = [Atom()]*(nat-1)
+        tmp = [Atom]*(nat-1)
         index = 0
 
-        print_center("Starting the parse of the PDB file", emph = True)
+        print_center(f"Starting to parse the PDB file {file}", emph = True)
         print_center(f"Number of atoms: {nat}")
 
         res_chain: dict = dict()
@@ -55,13 +58,14 @@ class PDB(StructrueFile):
                     res_chain[chain][resi] = resn
                 if chain == " ":
                     chain = None
+                at = Atom()
+                at.set_atom(elem, x, y, z)
+                at.add_index(int(line[6:11]))
+                at.change_prefix(prefix)
+                at.add_atom_type(line[12:16].strip())
+                at.add_residue_information(resname=resn, resid=resi, chain=chain)
 
-                tmp[index].set_atom(elem, x, y, z)
-                tmp[index].add_index(int(line[6:11]))
-                tmp[index].change_prefix(prefix)
-                tmp[index].add_atom_type(line[12:16].strip())
-                tmp[index].add_residue_information(resname=resn, resid=resi, chain=chain)
-
+                tmp[index]  = at
                 index += 1
         total = 0
         for chain in res_chain.keys():
@@ -119,12 +123,12 @@ class PDB(StructrueFile):
                 f"PDB file created by Ross Amory on {datetime.datetime.now().strftime('%x at %X')}",),
                 file=f)
             print("REMARK {0:3} {1:68}".format("1".ljust(3),
-                                                f"PDB file generated according to PDB v3.3"), file=f)
+                f"PDB file generated according to PDB v3.3"), file=f)
             print("REMARK {0:3} {1:68}".format("2".ljust(3),
-                                                f"PDB file generated using a script made by Dr. Ross Amory"),
-                                                file=f)
+                f"PDB file generated using a script made by Dr. Ross Amory"),
+                file=f)
             print("REMARK {0:3} {1:68}".format("3".ljust(3),
-                                                f"This script is in its BETA stage and so should be used with caution."),
-                                                file=f)
+                f"This script is in its BETA stage and so should be used with caution."),
+                file=f)
             for at in self.structure.atoms:
                 print(self._format_atom(at), file=f)

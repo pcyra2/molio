@@ -7,10 +7,12 @@ class AminoAcid:
     backbone_atoms: list[str] = ["CA", "C", "N", "O"]
 
 
-    def __init__(self, resname: str,
+    def __init__(self,
+                 resname: str,
                  parent: str,
                  polar: bool,
-                 charge: int,):
+                 charge: int,
+                 ):
         self.resname = resname
         self.parent = parent
         self.polar = polar
