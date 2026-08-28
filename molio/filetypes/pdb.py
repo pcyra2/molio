@@ -4,6 +4,7 @@ from molio.structure.atom import Atom
 from molio.filetypes.filetypes import StructrueFile
 
 import datetime
+from urllib.request import urlretrieve
 import os
 
 class PDB(StructrueFile):
@@ -132,3 +133,15 @@ class PDB(StructrueFile):
                 file=f)
             for at in self.structure.atoms:
                 print(self._format_atom(at), file=f)
+
+
+    def fetch(self, pdb_id: str) -> None:
+        """
+        Downloads a PDB file from the rcsb server
+
+        Args:
+            pdb_id (str): PDB code
+        """
+        pdb_path = f"https://files.rcsb.org/download/{pdb_id}.pdb"
+        urlretrieve(pdb_path, f"{pdb_id}.pdb")
+        self.from_file(f"{pdb_id}.pdb")
