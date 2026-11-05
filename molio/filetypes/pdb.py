@@ -31,8 +31,7 @@ class PDB(StructrueFile):
 
         assert nat is not None
 
-        tmp = [Atom]*(nat-1)
-        index = 0
+        tmp: list[Atom] = []
 
         print_center(f"Starting to parse the PDB file {file}", emph = True)
         print_center(f"Number of atoms: {nat}")
@@ -66,8 +65,7 @@ class PDB(StructrueFile):
                 at.add_atom_type(line[12:16].strip())
                 at.add_residue_information(resname=resn, resid=resi, chain=chain)
 
-                tmp[index]  = at
-                index += 1
+                tmp.append(at)
         total = 0
         for chain in res_chain.keys():
             total += len(res_chain[chain].keys())

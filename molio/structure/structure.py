@@ -137,6 +137,29 @@ class Structure:
         return arr
 
 
+    def calculate_center(self, mode: str = "geometric") -> numpy.ndarray:
+        """
+        Calculates the centre of the structure. The centre is returned, not stored.
+
+        Args:
+            mode (str, optional): "geometric" for the mean of the atomic coordinates,
+                or "mass" for the centre of mass using standard atomic weights.
+                Defaults to "geometric".
+
+        Returns:
+            centre (numpy.ndarray): The x, y, z coordinates of the centre.
+
+        Raises:
+            ValueError: If mode is not "geometric" or "mass", or if an element is unknown in "mass" mode.
+        """
+        if mode == "geometric":
+            return self._coord_array().mean(axis=0)
+        if mode == "mass":
+            masses = numpy.array([atom._get_atomic_mass() for atom in self.atoms], dtype=float)
+            return (masses[:, None] * self._coord_array()).sum(axis=0) / masses.sum()
+        raise ValueError(f"Unknown centre mode {mode!r}. Use 'geometric' or 'mass'.")
+
+
     def add_structure(self, structure2) -> None:
         """
         Adds a structure to the existing structure.
